@@ -157,19 +157,73 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const originalText = btn.innerHTML;
+            const originalBackground = btn.style.background;
+            const originalColor = btn.style.color;
 
-            btn.innerHTML = '<span>Terkirim! ✓</span>';
-            btn.style.background = '#4a7c10';
-            btn.style.color = '#fff';
+            // Loading state
+            btn.innerHTML = `
+                <span>Mengirim...</span>
+                <svg class="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; margin-left: 8px;">
+                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.2)" stroke-dasharray="80" stroke-dashoffset="0"></circle>
+                    <path d="M22 12c0-5.523-4.477-10-10-10" stroke="currentColor"></path>
+                </svg>
+            `;
             btn.disabled = true;
 
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = '';
-                btn.style.color = '';
-                btn.disabled = false;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+
+            // Send to FormSubmit API
+            fetch("https://formsubmit.co/ajax/vhereygapro@gmail.com", {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    _subject: `Pesan Baru dari ${name}: ${subject}`,
+                    message: message,
+                    _captcha: "false" // Disable captcha challenge page to keep premium inline experience
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Gagal mengirim pesan.');
+            })
+            .then(data => {
+                // Success state
+                btn.innerHTML = '<span>Terkirim! ✓</span>';
+                btn.style.background = '#4a7c10'; // Green color
+                btn.style.color = '#fff';
                 contactForm.reset();
-            }, 3000);
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = originalBackground;
+                    btn.style.color = originalColor;
+                    btn.disabled = false;
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                // Failure state
+                btn.innerHTML = '<span>Gagal Mengirim ✗</span>';
+                btn.style.background = '#e11d48'; // Red color
+                btn.style.color = '#fff';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = originalBackground;
+                    btn.style.color = originalColor;
+                    btn.disabled = false;
+                }, 3000);
+            });
         });
     }
 
