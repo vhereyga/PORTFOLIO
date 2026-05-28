@@ -1331,13 +1331,7 @@ a[href*="spline"],
     }
 
     .hero-visual {
-        order: 1;
-        min-height: 480px;
-        transform: translateX(0);
-    }
-
-    .spline-wrapper {
-        height: 480px;
+        display: none !important;
     }
 
     .hero-tag {
@@ -1454,17 +1448,7 @@ a[href*="spline"],
         font-size: clamp(2.4rem, 8vw, 3.5rem);
     }
 
-    .hero-visual {
-        min-height: 400px;
-    }
 
-    .spline-wrapper {
-        height: 400px;
-    }
-
-    #canvas3d {
-        pointer-events: none;
-    }
 
     .timeline::before {
         left: 3px;

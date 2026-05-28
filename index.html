@@ -669,79 +669,95 @@
 
     <script src="script.js"></script>
     <script type="module">
-        import { Application } from 'https://esm.sh/@splinetool/runtime';
+        // Periksa apakah layar desktop (> 1024px) dan bukan perangkat mobile
+        const isDesktop = window.innerWidth > 1024 && !(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
 
-        const canvas = document.getElementById('canvas3d');
-        const loader = document.getElementById('splineLoader');
-        const spline = new Application(canvas);
+        if (isDesktop) {
+            // Gunakan dynamic import agar library spline tidak diunduh di perangkat mobile/HP
+            import('https://esm.sh/@splinetool/runtime')
+                .then(({ Application }) => {
+                    const canvas = document.getElementById('canvas3d');
+                    const loader = document.getElementById('splineLoader');
+                    const spline = new Application(canvas);
 
-        // Fungsi untuk menghapus watermark secara berkala dan via MutationObserver
-        function removeSplineWatermark() {
-            const cleanup = () => {
-                // 1. Hapus semua link yang mengarah ke spline
-                const anchors = document.querySelectorAll('a[href*="spline"]');
-                anchors.forEach(a => a.remove());
+                    // Fungsi untuk menghapus watermark secara berkala dan via MutationObserver
+                    function removeSplineWatermark() {
+                        const cleanup = () => {
+                            // 1. Hapus semua link yang mengarah ke spline
+                            const anchors = document.querySelectorAll('a[href*="spline"]');
+                            anchors.forEach(a => a.remove());
 
-                // 2. Hapus jika ada shadow DOM (misal pada komponen spline-viewer)
-                document.querySelectorAll('*').forEach(el => {
-                    if (el.shadowRoot) {
-                        el.shadowRoot.querySelectorAll('a[href*="spline"], #logo').forEach(a => a.remove());
-                    }
-                });
+                            // 2. Hapus jika ada shadow DOM (misal pada komponen spline-viewer)
+                            document.querySelectorAll('*').forEach(el => {
+                                if (el.shadowRoot) {
+                                    el.shadowRoot.querySelectorAll('a[href*="spline"], #logo').forEach(a => a.remove());
+                                }
+                            });
 
-                // 3. Cari teks "built with spline" dan hapus elemennya
-                const walker = document.createTreeWalker(
-                    document.body,
-                    NodeFilter.SHOW_TEXT,
-                    null,
-                    false
-                );
-                let node;
-                const nodesToRemove = [];
-                while (node = walker.nextNode()) {
-                    const val = node.nodeValue.toLowerCase();
-                    if (val.includes('built with spline') || val.includes('spline')) {
-                        const parent = node.parentElement;
-                        if (parent) {
-                            const link = parent.closest('a') || parent.closest('div');
-                            if (link && link !== document.body && !link.id.includes('hero') && !link.classList.contains('nav-logo') && link.id !== 'splineWrapper') {
-                                nodesToRemove.push(link);
+                            // 3. Cari teks "built with spline" dan hapus elemennya
+                            const walker = document.createTreeWalker(
+                                document.body,
+                                NodeFilter.SHOW_TEXT,
+                                null,
+                                false
+                            );
+                            let node;
+                            const nodesToRemove = [];
+                            while (node = walker.nextNode()) {
+                                const val = node.nodeValue.toLowerCase();
+                                if (val.includes('built with spline') || val.includes('spline')) {
+                                    const parent = node.parentElement;
+                                    if (parent) {
+                                        const link = parent.closest('a') || parent.closest('div');
+                                        if (link && link !== document.body && !link.id.includes('hero') && !link.classList.contains('nav-logo') && link.id !== 'splineWrapper') {
+                                            nodesToRemove.push(link);
+                                        }
+                                    }
+                                }
                             }
-                        }
+                            nodesToRemove.forEach(n => {
+                                try {
+                                    n.remove();
+                                } catch (e) { }
+                            });
+                        };
+
+                        // Jalankan berkala
+                        cleanup();
+                        const interval = setInterval(cleanup, 100);
+                        setTimeout(() => clearInterval(interval), 10000);
+
+                        // Observasi perubahan DOM
+                        const observer = new MutationObserver(cleanup);
+                        observer.observe(document.body, { childList: true, subtree: true });
                     }
-                }
-                nodesToRemove.forEach(n => {
-                    try {
-                        n.remove();
-                    } catch (e) { }
+
+                    spline.load('https://prod.spline.design/bNdS3DsoAUBNtEqU/scene.splinecode?v=' + Date.now())
+                        .then(() => {
+                            console.log('✅ Spline scene loaded');
+                            loader.classList.add('hidden');
+                            canvas.classList.add('loaded');
+                            removeSplineWatermark();
+                        })
+                        .catch((err) => {
+                            console.error('Spline load error:', err);
+                            loader.innerHTML = '<span>3D gagal dimuat</span>';
+                        });
+
+                    // Jalankan juga di event load lainnya
+                    document.addEventListener('DOMContentLoaded', removeSplineWatermark);
+                    window.addEventListener('load', removeSplineWatermark);
+                })
+                .catch((err) => {
+                    console.error('Gagal mengimpor Spline runtime:', err);
                 });
-            };
-
-            // Jalankan berkala
-            cleanup();
-            const interval = setInterval(cleanup, 100);
-            setTimeout(() => clearInterval(interval), 10000);
-
-            // Observasi perubahan DOM
-            const observer = new MutationObserver(cleanup);
-            observer.observe(document.body, { childList: true, subtree: true });
+        } else {
+            // Sembunyikan elemen visual spline jika bukan desktop
+            const heroVisual = document.getElementById('heroVisual');
+            if (heroVisual) {
+                heroVisual.style.display = 'none';
+            }
         }
-
-        spline.load('https://prod.spline.design/bNdS3DsoAUBNtEqU/scene.splinecode?v=' + Date.now())
-            .then(() => {
-                console.log('✅ Spline scene loaded');
-                loader.classList.add('hidden');
-                canvas.classList.add('loaded');
-                removeSplineWatermark();
-            })
-            .catch((err) => {
-                console.error('Spline load error:', err);
-                loader.innerHTML = '<span>3D gagal dimuat</span>';
-            });
-
-        // Jalankan juga di event load lainnya
-        document.addEventListener('DOMContentLoaded', removeSplineWatermark);
-        window.addEventListener('load', removeSplineWatermark);
     </script>
 </body>
 
