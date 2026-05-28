@@ -444,6 +444,7 @@ ul {
     justify-content: center;
     min-height: 650px;
     transform: translateX(40px);
+    z-index: 1;
 }
 
 .spline-wrapper {
@@ -629,7 +630,7 @@ a[href*="spline"],
 .timeline::before {
     content: '';
     position: absolute;
-    left: 7px;
+    left: 11px;
     top: 0;
     bottom: 0;
     width: 2px;
@@ -1326,11 +1327,11 @@ a[href*="spline"],
     }
 
     .hero-content {
-        order: 1;
+        order: 0;
     }
 
     .hero-visual {
-        order: 0;
+        order: 1;
         min-height: 480px;
         transform: translateX(0);
     }
@@ -1459,6 +1460,14 @@ a[href*="spline"],
 
     .spline-wrapper {
         height: 400px;
+    }
+
+    #canvas3d {
+        pointer-events: none;
+    }
+
+    .timeline::before {
+        left: 3px;
     }
 
     .hero-stats {
