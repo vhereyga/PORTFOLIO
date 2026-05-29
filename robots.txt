@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vhereyga.vercel.app/sitemap.xml
