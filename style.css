@@ -147,9 +147,17 @@ ul {
     border-radius: 2px;
 }
 
-.logo-bar:nth-child(1) { height: 12px; }
-.logo-bar:nth-child(2) { height: 20px; }
-.logo-bar:nth-child(3) { height: 28px; }
+.logo-bar:nth-child(1) {
+    height: 12px;
+}
+
+.logo-bar:nth-child(2) {
+    height: 20px;
+}
+
+.logo-bar:nth-child(3) {
+    height: 28px;
+}
 
 .logo-text {
     display: flex;
@@ -291,6 +299,71 @@ ul {
     pointer-events: none;
 }
 
+/* --- Top-Left Atmospheric Light (Studio Spotlight) --- */
+.hero-light-ray {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 130%;
+    height: 120%;
+    background: linear-gradient(135deg,
+            rgba(232, 240, 255, 0.22) 0%,
+            rgba(217, 70, 239, 0.14) 20%,
+            rgba(6, 182, 212, 0.08) 45%,
+            rgba(200, 230, 64, 0.03) 70%,
+            transparent 90%);
+    clip-path: polygon(0 0, 100% 35%, 100% 80%, 0 20%);
+    filter: blur(65px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+    mix-blend-mode: screen;
+    animation: raySway 14s ease-in-out infinite alternate;
+}
+
+.hero-light-ambient {
+    position: absolute;
+    top: -25%;
+    left: -25%;
+    width: 80%;
+    height: 90%;
+    background: radial-gradient(circle at 25% 25%,
+            rgba(217, 70, 239, 0.2) 0%,
+            rgba(139, 92, 246, 0.12) 30%,
+            rgba(6, 182, 212, 0.05) 60%,
+            transparent 80%);
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.9;
+    animation: ambientPulse 12s ease-in-out infinite alternate;
+}
+
+/* Animations for Top-Left Studio Spotlight */
+@keyframes raySway {
+    0% {
+        transform: rotate(-1deg) scale(0.98);
+        opacity: 0.75;
+    }
+
+    100% {
+        transform: rotate(2deg) scale(1.02);
+        opacity: 0.9;
+    }
+}
+
+@keyframes ambientPulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.05);
+        opacity: 0.95;
+    }
+}
+
 .hero-container {
     max-width: var(--container-max);
     margin: 0 auto;
@@ -333,6 +406,38 @@ ul {
     margin-bottom: 24px;
     letter-spacing: -2px;
     color: var(--text-heading);
+}
+
+.glow-name {
+    color: var(--text-heading);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.15),
+                 0 0 15px rgba(200, 230, 64, 0.2),
+                 0 0 25px rgba(200, 230, 64, 0.3);
+    transition: text-shadow var(--transition-base), transform var(--transition-base);
+    display: inline-block;
+    animation: nameGlow 3s ease-in-out infinite alternate;
+}
+
+.glow-name:hover {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.35),
+                 0 0 25px rgba(200, 230, 64, 0.5),
+                 0 0 45px rgba(200, 230, 64, 0.8),
+                 0 0 60px rgba(200, 230, 64, 0.5);
+    transform: translateY(-2px);
+    cursor: default;
+}
+
+@keyframes nameGlow {
+    0% {
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.1),
+                     0 0 12px rgba(200, 230, 64, 0.15),
+                     0 0 20px rgba(200, 230, 64, 0.25);
+    }
+    100% {
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.25),
+                     0 0 22px rgba(200, 230, 64, 0.35),
+                     0 0 38px rgba(200, 230, 64, 0.5);
+    }
 }
 
 .hero-accent {
@@ -472,9 +577,9 @@ a[href*="spline.design"],
 a[href*="spline"],
 [class*="spline"] a,
 [id*="spline"] a,
-#canvas3d + a,
+#canvas3d+a,
 .spline-wrapper a,
-.spline-wrapper > div:not(.spline-loader):not(.spline-spinner):not(.spline-watermark-cover) {
+.spline-wrapper>div:not(.spline-loader):not(.spline-spinner):not(.spline-watermark-cover) {
     display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -491,9 +596,12 @@ a[href*="spline"],
     right: 0 !important;
     width: 170px !important;
     height: 55px !important;
-    background: #09090b !important; /* Warna latar belakang gelap Hero */
-    z-index: 999999 !important; /* Berada di atas canvas dan logo apapun */
-    pointer-events: auto !important; /* Memblokir interaksi mouse ke link di bawahnya */
+    background: #09090b !important;
+    /* Warna latar belakang gelap Hero */
+    z-index: 999999 !important;
+    /* Berada di atas canvas dan logo apapun */
+    pointer-events: auto !important;
+    /* Memblokir interaksi mouse ke link di bawahnya */
     display: block !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -537,7 +645,9 @@ a[href*="spline"],
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Scroll Indicator */
@@ -564,8 +674,17 @@ a[href*="spline"],
 }
 
 @keyframes scrollBounce {
-    0%, 100% { transform: scaleY(1); opacity: 1; }
-    50% { transform: scaleY(0.5); opacity: 0.4; }
+
+    0%,
+    100% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scaleY(0.5);
+        opacity: 0.4;
+    }
 }
 
 /* ============================================
@@ -645,9 +764,17 @@ a[href*="spline"],
     animation: fadeInUp 0.6s ease forwards;
 }
 
-.timeline-item:nth-child(1) { animation-delay: 0.1s; }
-.timeline-item:nth-child(2) { animation-delay: 0.3s; }
-.timeline-item:nth-child(3) { animation-delay: 0.5s; }
+.timeline-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.timeline-item:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.timeline-item:nth-child(3) {
+    animation-delay: 0.5s;
+}
 
 .timeline-marker {
     position: absolute;
@@ -1296,6 +1423,7 @@ a[href*="spline"],
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
