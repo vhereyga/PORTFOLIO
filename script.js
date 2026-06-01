@@ -360,5 +360,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initStarField();
-    initVideoOptimizer();
+    // initVideoOptimizer(); // Disabled since background videos are now static images
 });
