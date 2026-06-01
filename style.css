@@ -170,9 +170,10 @@ ul {
 .logo-sub {
     font-size: 8px;
     letter-spacing: 3px;
-    color: var(--text-muted);
-    font-weight: 500;
+    color: #d2c4ff; /* Light lavender for contrast */
+    font-weight: 700;
     margin-top: 2px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Center Menu: Floating Pill (Desktop) */
@@ -553,21 +554,32 @@ ul {
 }
 
 .hero-tag {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--text-heading);
+    background: rgba(3, 0, 20, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(112, 66, 248, 0.35);
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
     margin-bottom: 24px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    width: fit-content;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .hero-tag::before {
     content: '';
-    width: 40px;
-    height: 1px;
-    background: var(--accent-dim);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ba9cff;
+    box-shadow: 0 0 8px #7042f8;
 }
 
 .hero-title {
