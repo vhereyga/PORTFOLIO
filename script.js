@@ -3,10 +3,10 @@
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Navbar scroll effect ---
+        // --- Navbar scroll effect ---
     const navbar = document.getElementById('navbar');
     const backToTop = document.getElementById('backToTop');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
     const sections = document.querySelectorAll('section[id]');
 
     function handleScroll() {
@@ -54,22 +54,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Mobile nav toggle ---
     const navToggle = document.getElementById('navToggle');
-    const navLinksContainer = document.getElementById('navLinks');
+    const mobileMenu = document.getElementById('mobileMenu');
 
-    navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navLinksContainer.classList.toggle('active');
-        document.body.style.overflow = navLinksContainer.classList.contains('active') ? 'hidden' : '';
-    });
-
-    // Close mobile nav on link click
-    navLinksContainer.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            navToggle.classList.remove('active');
-            navLinksContainer.classList.remove('active');
-            document.body.style.overflow = '';
+    if (navToggle && mobileMenu) {
+        navToggle.addEventListener('click', () => {
+            navToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         });
-    });
+
+        // Close mobile nav on link click
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navToggle.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 
     // --- Smooth scroll for all anchor links ---
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -245,4 +247,118 @@ document.addEventListener('DOMContentLoaded', () => {
             heroContent.style.opacity = 1 - scrollY / (window.innerHeight * 0.8);
         }
     }, { passive: true });
+
+    // --- 3D Rotating Star Field Background ---
+    function initStarField() {
+        const canvas = document.getElementById('stars-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        // Reposition on resize
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        // 3D Star configuration
+        const numStars = 400;
+        const stars = [];
+        const sphereRadius = 800;
+        const distance = 1000;
+        const fov = 500;
+
+        // Generate stars in a sphere using spherical coordinate distribution
+        for (let i = 0; i < numStars; i++) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = u * 2.0 * Math.PI;
+            const phi = Math.acos(2.0 * v - 1.0);
+            const r = Math.cbrt(Math.random()) * sphereRadius;
+
+            stars.push({
+                x: r * Math.sin(phi) * Math.cos(theta),
+                y: r * Math.sin(phi) * Math.sin(theta),
+                z: r * Math.cos(phi)
+            });
+        }
+
+        // Slow rotation angles (every frame)
+        const angleX = 0.0007;
+        const angleY = 0.0004;
+
+        const cosX = Math.cos(angleX);
+        const sinX = Math.sin(angleX);
+        const cosY = Math.cos(angleY);
+        const sinY = Math.sin(angleY);
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < numStars; i++) {
+                const star = stars[i];
+
+                // 1. Rotate Y
+                const x1 = star.x * cosY - star.z * sinY;
+                const z1 = star.x * sinY + star.z * cosY;
+
+                // 2. Rotate X
+                const y1 = star.y * cosX - z1 * sinX;
+                const z2 = star.y * sinX + z1 * cosX;
+
+                // Update coordinates
+                star.x = x1;
+                star.y = y1;
+                star.z = z2;
+
+                // 3. Project to 2D screen
+                const projectedZ = star.z + distance;
+                if (projectedZ > 0) {
+                    const scale = fov / projectedZ;
+                    const screenX = width / 2 + star.x * scale;
+                    const screenY = height / 2 + star.y * scale;
+
+                    // Only draw if within screen boundaries
+                    if (screenX >= 0 && screenX <= width && screenY >= 0 && screenY <= height) {
+                        const size = Math.max(0.4, 1.2 * scale);
+                        // Dimmer as stars are further away
+                        const opacity = Math.min(1, Math.max(0.15, 1 - projectedZ / 1700));
+
+                        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    // --- Optimize Background Videos (Play only when in viewport) ---
+    function initVideoOptimizer() {
+        const videos = document.querySelectorAll('.hero-bg-video, .skills-bg-video');
+        if ('IntersectionObserver' in window) {
+            const videoObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    if (entry.isIntersecting) {
+                        video.play().catch(err => console.log("Video play interrupted:", err));
+                    } else {
+                        video.pause();
+                    }
+                });
+            }, { threshold: 0.05 });
+
+            videos.forEach(video => videoObserver.observe(video));
+        }
+    }
+
+    initStarField();
+    initVideoOptimizer();
 });
