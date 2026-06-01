@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vhereyga.vercel.app/sitemap.xml
+Sitemap: https://vhereyga.my.id/sitemap.xml

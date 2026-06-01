@@ -1,6 +1,6 @@
 const { writeFileSync } = require('fs');
 
-const DOMAIN = 'https://vhereyga.vercel.app/';
+const DOMAIN = 'https://vhereyga.my.id/';
 const date = new Date().toISOString().split('T')[0];
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
